@@ -21,10 +21,14 @@ import apple from "../assets/logos/apple.png";
 const SignInPage: FC<AppProps.SignInPageProps<HTMLElement>> = ({
   attributes,
 }): ReactElement<HTMLElement> => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const emailRef: InputRef = useRef() as InputRef;
-  const passwordRef: InputRef = useRef() as InputRef;
+  const [formData, setFormData] = useState<UserModel.FormData>({
+    email: "",
+    password: "",
+  });
+  const formDataRef: UserModel.FormDataRef = {
+    email: useRef() as InputRef,
+    password: useRef() as InputRef,
+  };
 
   return (
     <Container
@@ -38,8 +42,8 @@ const SignInPage: FC<AppProps.SignInPageProps<HTMLElement>> = ({
         attributes={{
           onSubmit: (e: FormEvent<HTMLFormElement>): void =>
             UtilityFuncs.handleSubmit(e, (): void => {
-              console.log({ email, password });
-              UtilityFuncs.resetForm(emailRef, passwordRef);
+              console.log(formData);
+              UtilityFuncs.resetForm(...Object.values(formDataRef));
             }),
         }}
       >
@@ -49,7 +53,7 @@ const SignInPage: FC<AppProps.SignInPageProps<HTMLElement>> = ({
           }}
         >
           <InputField
-            inputRef={emailRef}
+            inputRef={formDataRef.email}
             inputAttributes={{
               id: "email",
               type: "email",
@@ -58,12 +62,17 @@ const SignInPage: FC<AppProps.SignInPageProps<HTMLElement>> = ({
               maxLength: 40,
               required: true,
               onChange: (e: ChangeEvent<HTMLInputElement>): void => {
-                UtilityFuncs.handleChange(e, setEmail);
+                UtilityFuncs.handleChange<UserModel.FormData>(
+                  e,
+                  setFormData,
+                  "email",
+                  formData
+                );
               },
             }}
           />
           <InputField
-            inputRef={passwordRef}
+            inputRef={formDataRef.password}
             inputAttributes={{
               id: "password",
               type: "password",
@@ -73,7 +82,12 @@ const SignInPage: FC<AppProps.SignInPageProps<HTMLElement>> = ({
               minLength: 8,
               required: true,
               onChange: (e: ChangeEvent<HTMLInputElement>): void => {
-                UtilityFuncs.handleChange(e, setPassword);
+                UtilityFuncs.handleChange<UserModel.FormData>(
+                  e,
+                  setFormData,
+                  "password",
+                  formData
+                );
               },
             }}
           />

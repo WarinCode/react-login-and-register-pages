@@ -5,7 +5,7 @@ interface BaseAttributes<T extends HTMLElement> {
 }
 
 declare type InputRef = React.MutableRefObject<HTMLInputElement>;
-declare type InputRefs = Array<InputRef>
+declare type InputRefs = Array<InputRef>;
 
 declare namespace AppProps {
   declare interface ContainerProps<T extends HTMLElement>
@@ -45,14 +45,24 @@ declare namespace AppProps {
 }
 
 declare namespace UserModel {
-  declare interface BaseUser<T = unknown> {
+  declare interface BaseUser<T = null> {
     name: T;
     email: T;
     password: T;
   }
-  declare interface UserObject<T extends string = string> extends BaseUser<T> {
-    id: T;
-  }
+  declare type BaseInputForm<T = null> = Pick<
+    BaseUser<T>,
+    "email" | "password"
+  >;
+  declare type UserObject = BaseUser<string> & {
+    id: string;
+    confirmPassword: string;
+  };
+  declare type UserAccount = Omit<UserObject, "confirmPassword">;
+  declare type Users = Array<UserAccount>;
+  declare type FormData = BaseInputForm<string>;
+  declare type FormDataRef = BaseInputForm<InputRef>;
+
   declare interface UserRef<T extends InputRef = InputRef> extends BaseUser<T> {
     confirmPassword: T;
   }

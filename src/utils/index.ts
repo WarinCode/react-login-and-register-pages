@@ -12,11 +12,17 @@ namespace UtilityFuncs {
     const uniqueId: ShortUniqueId = new ShortUniqueId(options);
     return uniqueId.randomUUID(options?.uuidLength);
   };
-  export const handleChange = (
+  export const handleChange = <T extends object>(
     e: ChangeEvent<HTMLInputElement>,
-    callback: Dispatch<SetStateAction<string>>
+    callback: Dispatch<SetStateAction<T>>,
+    key: string,
+    obj: T
   ): void => {
-    callback(e.target.value);
+    if (Object.keys(obj).includes(key)) {
+      callback({ ...obj, [key]: e.target.value });
+    } else {
+      callback(obj);
+    }
   };
   export const handleSubmit = (
     e: FormEvent<HTMLFormElement>,

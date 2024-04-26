@@ -3,6 +3,7 @@ import {
   FC,
   useRef,
   useState,
+  useEffect,
   FormEvent,
   ChangeEvent,
 } from "react";
@@ -17,12 +18,14 @@ import UtilityFuncs from "../utils";
 const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
   attributes,
 }): ReactElement<HTMLElement> => {
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const id: string = UtilityFuncs.generateId({ uuidLength: 30 });
-
+  const [user, setUser] = useState<UserModel.UserObject>({
+    name: "",
+    email: "",
+    password: "",
+    id: "",
+    confirmPassword: "",
+  });
+  const [users, setUsers] = useState<UserModel.Users>([]);
   const userRef: UserModel.UserRef = {
     name: useRef() as InputRef,
     email: useRef() as InputRef,
@@ -30,16 +33,20 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
     confirmPassword: useRef() as InputRef,
   };
 
+  useEffect((): void => {
+    console.log(users);
+  }, [users]);
+
   const validate = (): boolean => {
-    if (name === "" || name.length < 3) {
+    if (user.name === "" || user.name.length < 3) {
       alert("ชื่อผู้ใช้งานต้องมีความยาวอย่างน้อย 3 ตัวอักษรขึ้นไป!");
       UtilityFuncs.resetForm(userRef.name);
       return false;
-    } else if (Number(name[0]) in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+    } else if (Number(user.name[0]) in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
       alert("ชื่อผู้ใช้งานต้องไม่สามารถขึ้นต้นด้วยตัวเลขได้!");
       UtilityFuncs.resetForm(userRef.name);
       return false;
-    } else if (password !== confirmPassword) {
+    } else if (user.password !== user.confirmPassword) {
       alert("รหัสผ่านไม่ถูกต้อง!");
       UtilityFuncs.resetForm(userRef.confirmPassword, userRef.password);
       return false;
@@ -49,7 +56,9 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
     }
   };
 
-  const createUserAccount = (): UserModel.UserObject => {
+  const getUserAccount = (): UserModel.UserAccount => {
+    let { id, name, email, password } = user;
+    id = UtilityFuncs.generateId({ uuidLength: 30 });
     return { id, name, email, password };
   };
 
@@ -74,8 +83,13 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
                       return typeof el !== "string";
                     })
                 );
-                console.log(createUserAccount());
               });
+              setUsers(
+                (prev: UserModel.Users): UserModel.Users => [
+                  ...prev,
+                  getUserAccount(),
+                ]
+              );
             }
           },
         }}
@@ -93,7 +107,12 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
               placeholder: "name",
               required: true,
               onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                UtilityFuncs.handleChange(e, setName);
+                UtilityFuncs.handleChange<UserModel.UserObject>(
+                  e,
+                  setUser,
+                  "name",
+                  user
+                );
               },
             }}
           />
@@ -105,7 +124,12 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
               placeholder: "email",
               required: true,
               onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                UtilityFuncs.handleChange(e, setEmail);
+                UtilityFuncs.handleChange<UserModel.UserObject>(
+                  e,
+                  setUser,
+                  "email",
+                  user
+                );
               },
             }}
           />
@@ -119,7 +143,12 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
               max: 30,
               required: true,
               onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                UtilityFuncs.handleChange(e, setPassword);
+                UtilityFuncs.handleChange<UserModel.UserObject>(
+                  e,
+                  setUser,
+                  "password",
+                  user
+                );
               },
             }}
           />
@@ -133,7 +162,12 @@ const SignUpPage: FC<AppProps.SignUpPageProps<HTMLElement>> = ({
               max: 30,
               required: true,
               onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                UtilityFuncs.handleChange(e, setConfirmPassword);
+                UtilityFuncs.handleChange<UserModel.UserObject>(
+                  e,
+                  setUser,
+                  "confirmPassword",
+                  user
+                );
               },
             }}
           />
